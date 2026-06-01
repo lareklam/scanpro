@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.cs text eol=lf
+*.xaml text eol=lf
+*.csproj text eol=lf
+*.sln text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.exe binary
+*.dll binary
+*.png binary
+*.traineddata binary

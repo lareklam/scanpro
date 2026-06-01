@@ -1,0 +1,233 @@
+<mah:MetroWindow
+    x:Class="ScanPro.src.UI.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:vm="clr-namespace:ScanPro.src.UI.ViewModels"
+    Title="Taşınabilir YZ Belge Tarayıcı Pro"
+    Width="1400" Height="860"
+    MinWidth="1024" MinHeight="640"
+    WindowStartupLocation="CenterScreen"
+    TitleCharacterCasing="Normal"
+    Background="#0C0D10">
+
+    <mah:MetroWindow.DataContext>
+        <vm:MainViewModel />
+    </mah:MetroWindow.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="28" />
+        </Grid.RowDefinitions>
+
+        <!-- TOOLBAR -->
+        <Border Grid.Row="0" Background="#15171C" Padding="12,8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="📄 Yeni Tarama" Margin="0,0,8,0"
+                        Command="{Binding StartNewScanCommand}"
+                        Background="#2F80ED" Foreground="White"
+                        BorderThickness="0" Padding="14,8" Cursor="Hand"/>
+                <Button Content="📁 İçe Aktar" Margin="0,0,8,0"
+                        Background="#1E2030" Foreground="#8B91A4"
+                        BorderThickness="0" Padding="14,8" Cursor="Hand"/>
+                <Button Content="🔍 OCR" Margin="0,0,8,0"
+                        Background="#1E2030" Foreground="#8B91A4"
+                        BorderThickness="0" Padding="14,8" Cursor="Hand"/>
+                <Button Content="💧 Filigran" Margin="0,0,8,0"
+                        Background="#1E2030" Foreground="#8B91A4"
+                        BorderThickness="0" Padding="14,8" Cursor="Hand"/>
+                <Button Content="📤 Dışa Aktar"
+                        Command="{Binding ExportCurrentDocumentCommand}"
+                        Background="#1E2030" Foreground="#8B91A4"
+                        BorderThickness="0" Padding="14,8" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <!-- MAIN AREA -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="280" />
+            </Grid.ColumnDefinitions>
+
+            <!-- SIDEBAR -->
+            <Border Grid.Column="0" Background="#13151A"
+                    BorderBrush="#12FFFFFF" BorderThickness="0,0,1,0">
+                <StackPanel Margin="10,14">
+                    <TextBlock Text="ÇALIŞMA ALANI" Foreground="#444B5E"
+                               FontSize="9" FontWeight="Bold" Margin="4,0,0,6"/>
+                    <Border Background="#162F80ED" CornerRadius="7" Padding="10,7" Margin="0,1">
+                        <TextBlock Text="🏠  Genel Bakış" Foreground="#2F80ED" FontSize="12"/>
+                    </Border>
+                    <Border CornerRadius="7" Padding="10,7" Margin="0,1" Cursor="Hand">
+                        <TextBlock Text="📷  Tarayıcı" Foreground="#8B91A4" FontSize="12"/>
+                    </Border>
+                    <Border CornerRadius="7" Padding="10,7" Margin="0,1" Cursor="Hand">
+                        <TextBlock Text="📚  Toplu İş Kuyruğu" Foreground="#8B91A4" FontSize="12"/>
+                    </Border>
+                    <Border CornerRadius="7" Padding="10,7" Margin="0,1" Cursor="Hand">
+                        <TextBlock Text="⚙️  İş Akışları" Foreground="#8B91A4" FontSize="12"/>
+                    </Border>
+
+                    <TextBlock Text="ARAÇLAR" Foreground="#444B5E"
+                               FontSize="9" FontWeight="Bold" Margin="4,14,0,6"/>
+                    <Border CornerRadius="7" Padding="10,7" Margin="0,1" Cursor="Hand">
+                        <TextBlock Text="🔤  OCR Motoru" Foreground="#8B91A4" FontSize="12"/>
+                    </Border>
+                    <Border CornerRadius="7" Padding="10,7" Margin="0,1" Cursor="Hand">
+                        <TextBlock Text="🤖  YZ Sınıflandır" Foreground="#8B91A4" FontSize="12"/>
+                    </Border>
+                    <Border CornerRadius="7" Padding="10,7" Margin="0,1" Cursor="Hand">
+                        <TextBlock Text="📊  QR / Barkod" Foreground="#8B91A4" FontSize="12"/>
+                    </Border>
+
+                    <!-- Privacy tag -->
+                    <Border Margin="0,20,0,0" Background="#0A27AE60"
+                            BorderBrush="#3327AE60" BorderThickness="1"
+                            CornerRadius="8" Padding="10,9">
+                        <TextBlock Text="🔒 Tamamen çevrimdışı&#10;Veri saklanmaz"
+                                   Foreground="#27AE60" FontSize="11" LineHeight="18"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- WORKSPACE -->
+            <Grid Grid.Column="1" Background="#0C0D10">
+                <!-- Busy overlay -->
+                <Grid Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                    <Grid Background="#CC000000"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <mah:ProgressRing Width="48" Height="48" Foreground="#2F80ED"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="White"
+                                   FontSize="14" Margin="0,16,0,0" TextAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Empty state -->
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Visibility="{Binding HasDocument, Converter={StaticResource InvBoolToVis}}">
+                    <TextBlock Text="📄" FontSize="64" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Tarama başlatmak için soldaki butonu kullanın"
+                               Foreground="#444B5E" FontSize="14" Margin="0,12,0,0"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Document info when loaded -->
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Visibility="{Binding HasDocument, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding CurrentDocumentName}"
+                               Foreground="#DDE1EC" FontSize="16" TextAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="#27AE60" FontSize="12" Margin="0,8,0,0"
+                               TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- RIGHT PANEL -->
+            <Border Grid.Column="2" Background="#13151A"
+                    BorderBrush="#12FFFFFF" BorderThickness="1,0,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16,14">
+
+                        <!-- Scan button -->
+                        <Button Content="📷  Yeni Tarama Başlat"
+                                Command="{Binding StartNewScanCommand}"
+                                Background="#2F80ED" Foreground="White"
+                                BorderThickness="0" Padding="0,11"
+                                FontSize="13" FontWeight="SemiBold" Cursor="Hand"/>
+
+                        <!-- Document info -->
+                        <TextBlock Text="BELGE BİLGİLERİ" Foreground="#444B5E"
+                                   FontSize="9" FontWeight="Bold" Margin="0,16,0,8"/>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Tür" Foreground="#8B91A4" FontSize="12"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DocumentType}"
+                                       Foreground="#DDE1EC" FontSize="12" HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Durum" Foreground="#8B91A4" FontSize="12"/>
+                            <TextBlock Grid.Column="1" Text="{Binding StatusMessage}"
+                                       Foreground="#27AE60" FontSize="12" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <!-- OCR Languages -->
+                        <TextBlock Text="OCR DİLİ" Foreground="#444B5E"
+                                   FontSize="9" FontWeight="Bold" Margin="0,14,0,8"/>
+                        <WrapPanel>
+                            <Border Background="#152F80ED" BorderBrush="#402F80ED"
+                                    BorderThickness="1" CornerRadius="5"
+                                    Padding="8,3" Margin="0,0,4,4">
+                                <TextBlock Text="TR" Foreground="#2F80ED" FontSize="11"/>
+                            </Border>
+                            <Border Background="#152F80ED" BorderBrush="#402F80ED"
+                                    BorderThickness="1" CornerRadius="5"
+                                    Padding="8,3" Margin="0,0,4,4">
+                                <TextBlock Text="EN" Foreground="#2F80ED" FontSize="11"/>
+                            </Border>
+                            <Border Background="#0DFFFFFF" BorderBrush="#12FFFFFF"
+                                    BorderThickness="1" CornerRadius="5"
+                                    Padding="8,3" Margin="0,0,4,4">
+                                <TextBlock Text="DE" Foreground="#8B91A4" FontSize="11"/>
+                            </Border>
+                            <Border Background="#0DFFFFFF" BorderBrush="#12FFFFFF"
+                                    BorderThickness="1" CornerRadius="5"
+                                    Padding="8,3" Margin="0,0,4,4">
+                                <TextBlock Text="FR" Foreground="#8B91A4" FontSize="11"/>
+                            </Border>
+                        </WrapPanel>
+
+                        <!-- Workflow -->
+                        <TextBlock Text="İŞ AKIŞI" Foreground="#444B5E"
+                                   FontSize="9" FontWeight="Bold" Margin="0,14,0,8"/>
+                        <ItemsControl ItemsSource="{Binding WorkflowSteps}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#0AFFFFFF" BorderBrush="#0DFFFFFF"
+                                            BorderThickness="1" CornerRadius="6"
+                                            Padding="10,6" Margin="0,2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding StatusIcon}"
+                                                       FontSize="11" Margin="0,0,8,0"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                                       Foreground="#8B91A4" FontSize="11.5"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding StatusText}"
+                                                       FontSize="10" Foreground="{Binding StatusColor}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- STATUS BAR -->
+        <Border Grid.Row="2" Background="#0A0B0E"
+                BorderBrush="#12FFFFFF" BorderThickness="0,1,0,0">
+            <Grid Margin="16,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="7" Height="7" Fill="#27AE60" Margin="0,0,6,0"/>
+                    <TextBlock Text="Çevrimdışı · Veri Saklanmıyor"
+                               Foreground="#27AE60" FontSize="10.5"/>
+                    <TextBlock Text=" · " Foreground="#444B5E" FontSize="10.5"/>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="#8B91A4" FontSize="10.5"/>
+                </StackPanel>
+                <TextBlock Text="{Binding CurrentTime}" HorizontalAlignment="Right"
+                           VerticalAlignment="Center" Foreground="#444B5E" FontSize="10.5"/>
+            </Grid>
+        </Border>
+    </Grid>
+</mah:MetroWindow>

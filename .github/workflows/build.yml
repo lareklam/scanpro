@@ -1,0 +1,29 @@
+name: Build
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    - run: dotnet restore ScanPro.csproj
+    - run: dotnet build ScanPro.csproj -c Release --no-restore
+    - run: dotnet publish ScanPro.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --output ./publish
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ScanPro-v3
+        path: publish/ScanPro.exe
+        retention-days: 30
+    - name: Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: publish/ScanPro.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
